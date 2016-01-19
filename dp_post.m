@@ -18,7 +18,6 @@ end
 % STEP 1: Init
 %--------------------------------------------------------------------------
 distro_mean = zeros(1, actN);
-num_acc = 0;
 
 %--------------------------------------------------------------------------
 % STEP 2: Gibbs sampling
@@ -35,8 +34,17 @@ for iter = 1:maxIter
     a = a + 1;
     b = b + alpha;
     
+    % sample V
     V = betarnd(a, b);
-       
+    
+    % compute distro
+    distro = V;
+    V = cumprod(1 - V);
+    distro(2:end) = distro(2:end) .* V(1:end-1);
+    
+    % acculate
+    distro_mean = distro + distro_mean;
     
 end
+distro_mean = distro_mean / maxIter;
 end
